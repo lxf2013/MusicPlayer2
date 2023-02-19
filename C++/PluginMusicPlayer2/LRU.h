@@ -21,6 +21,7 @@ private:
 public:
     LRU(int capacity);
     ~LRU();
+    bool Update(uint32_t capacityy);
     string insert(const string &name);
     bool empty();
 };

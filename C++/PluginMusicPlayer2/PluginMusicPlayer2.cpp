@@ -47,7 +47,6 @@ PLUGIN_EXPORT void Reload(void* data, void* rm, double* maxValue)
 		manager = Manager::AllocManager(RmGetMeasureName(rm));
 		measure->manager = manager;
 
-		manager->name = RmGetMeasureName(rm);
 		//³õÊ¼»¯ PlayerName
 		LPCWSTR str = RmReadString(rm, L"PlayerName", L"");
 
@@ -75,10 +74,14 @@ PLUGIN_EXPORT void Reload(void* data, void* rm, double* maxValue)
 			manager->player = QQMusic::Create();
 		}
 		
-		manager->lyricOffset = _wtoi(RmReadString(rm, L"LyricOffset", L"3000"));
-		manager->downloader.m_download_path = RmPathToAbsolute(rm, RmReadString(rm, L"DownloadPath", L"download"));
-		// RmLog(rm, LOG_WARNING, RmReadString(rm, L"DownloadPath", L"download"));
-		// RmLog(rm, LOG_WARNING, RmPathToAbsolute(rm, RmReadString(rm, L"DownloadPath", L"download")));
+		int offset = RmReadInt(rm, L"LyricOffset", 4500);
+		double similarity = RmReadDouble(rm, L"Similarity", 0.9);
+		LPCWSTR path = RmPathToAbsolute(rm, RmReadString(rm, L"DownloadPath", L"download"));
+		int     capacity = RmReadInt(rm, L"Capacity", 100);
+
+		manager->downloader.Init(path, capacity, similarity);
+		manager->lyric.Init(offset);
+
 		manager->playerPath = RmReadString(rm, L"PlayerPath", L"");
 		manager->trackChangeAction = RmReadString(rm, L"TrackChangeAction", L"");
 	}
@@ -193,7 +196,7 @@ PLUGIN_EXPORT double Update(void* data)
 	}
 	if(measure->manager->requireLyric){
 		if(player->m_TrackChanged && measure->manager->downloader.DownloadLyric(player->GetTrack())){
-			measure->manager->lyric.Load(measure->manager->downloader.GetLyricPath(), measure->manager->lyricOffset);
+			measure->manager->lyric.Load(measure->manager->downloader.GetLyricPath());
 		}
 		measure->manager->lyric.Update();
 	}

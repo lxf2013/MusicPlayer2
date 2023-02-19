@@ -32,6 +32,14 @@ LRU::~LRU(){
     }
 }
 
+bool LRU::Update(uint32_t capacity){
+    if(capacity <= m_capacity){
+        return false;
+    }
+    m_capacity = capacity;
+    return true;
+}
+
 string LRU::insert(const string &name){
     string ret;
     auto it = m_hash_data.find(name);

@@ -28,12 +28,10 @@ private:
 
 public:
     Lyric();
-    Lyric(const Lyric&) = delete;
-    Lyric& operator=(const Lyric&) = delete;
 
 public:
-    static Lyric* GetInstance();
-    bool Load(const wstring &file, int offset);
+    bool Init(int offset);
+    bool Load(const wstring &file);
     void Stop();
     void Start();
     void StopOrStart();

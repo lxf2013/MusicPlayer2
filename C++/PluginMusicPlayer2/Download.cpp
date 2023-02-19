@@ -43,49 +43,59 @@
     return result;
 }*/
 
-Downloader* Downloader::GetInstance() {
-    static Downloader downloader;
-    return &downloader;
-}
-
-Downloader::Downloader(): m_id(), m_client("http://music.163.com"), m_lru(2) {
+Downloader::Downloader(): m_id(), m_client("http://music.163.com"), m_lru(1) {
 }
 
 void Downloader::GetSongList(const string &json, vector<SongInfo> &song_infos){
     if(cJSON *root = cJSON_Parse(json.c_str())){
-        if(cJSON *result = cJSON_GetObjectItem(root, "result")){
-            if(cJSON *songs = cJSON_GetObjectItem(result, "songs")){
-                int song_size = cJSON_GetArraySize(songs);
-                for(int i=0; i<song_size; ++i){
-                    if(cJSON *song = cJSON_GetArrayItem(songs, i)){
-                        cJSON *item = nullptr;
-                        SongInfo song_info;
-                        item = cJSON_GetObjectItem(song, "id");
-                        if(item == nullptr){
-                            continue;
-                        }
-                        song_info.id = to_string(item->valueint);
-                        item = cJSON_GetObjectItem(song, "name");
-                        if(item == nullptr){
-                            continue;
-                        }
-                        song_info.info = item->valuestring;
-                        if(cJSON *artists = cJSON_GetObjectItem(song, "artists")){
-                            int artist_size = cJSON_GetArraySize(artists);
-                            for(int j=0; j<artist_size; ++j){
-                                if(cJSON *artist = cJSON_GetArrayItem(artists, j)){
-                                    if(cJSON *artist_name = cJSON_GetObjectItem(artist, "name")){
-                                        song_info.info += " ";
-                                        song_info.info += artist_name->valuestring;
-                                    }
-                                }
-                            }
-                        }
-                        song_infos.push_back(song_info);
+        do{
+            cJSON *result = cJSON_GetObjectItem(root, "result");
+            if(result == nullptr){
+                break;
+            }
+            cJSON *songs = cJSON_GetObjectItem(result, "songs");
+            if(songs == nullptr){
+                break;
+            }
+            int song_size = cJSON_GetArraySize(songs);
+            for(int i=0; i<song_size; ++i){
+                cJSON *song = cJSON_GetArrayItem(songs, i);
+                if(song == nullptr){
+                    continue;
+                }
+                
+                SongInfo song_info;
+                cJSON *item = cJSON_GetObjectItem(song, "id");
+                if(item == nullptr){
+                    continue;
+                }
+                song_info.id = to_string(item->valueint);
+
+                item = cJSON_GetObjectItem(song, "name");
+                if(item == nullptr){
+                    continue;
+                }
+                song_info.info = item->valuestring;
+
+                cJSON *artists = cJSON_GetObjectItem(song, "artists");
+                if(artists == nullptr){
+                    continue;
+                }
+                int artist_size = cJSON_GetArraySize(artists);
+                for(int j=0; j<artist_size; ++j){
+                    cJSON *artist = cJSON_GetArrayItem(artists, j);
+                    if(artist == nullptr){
+                        continue;
+                    }
+
+                    if(cJSON *artist_name = cJSON_GetObjectItem(artist, "name")){
+                        song_info.info += " ";
+                        song_info.info += artist_name->valuestring;
                     }
                 }
+                song_infos.push_back(song_info);
             }
-        }
+        }while(0);
         cJSON_Delete(root);
     }
 }
@@ -93,18 +103,22 @@ void Downloader::GetSongList(const string &json, vector<SongInfo> &song_infos){
 bool Downloader::GetId(const string &json, const string &track){
     vector<SongInfo> song_infos;
     GetSongList(json, song_infos);
+    int ti = -1, tdp = 0x3f3f3f3f;
 
-    int ti = 0, tdp = 0x3f3f3f3f;
+//wstring_convert<codecvt_utf8<wchar_t>> converter;
+//RmLog(LOG_WARNING, converter.from_bytes(track).c_str());
+
+//RmLog(LOG_WARNING, to_wstring(song_infos.size()).c_str());
 
     // 动态规划，找出相似度最高的一个
-    for(int i=0; i < song_infos.size(); ++i){
+    for(uint32_t i=0; i < song_infos.size(); ++i){
         int dp[256][256] = {};
         for(int i=0; i<256; ++i){
             dp[i][0] = dp[0][i] = i;
         }
         
-        for(int j=1; j<=track.size(); ++j){
-            for(int k=1; k<=song_infos[i].info.size(); ++k){
+        for(uint32_t j=1; j<256 && j<=track.size(); ++j){
+            for(uint32_t k=1; k<256 && k<=song_infos[i].info.size(); ++k){
                 if(track[j-1] == song_infos[i].info[k-1]){
                     //                 加上一个     删去一个          匹配当前
                     dp[j][k] = min(min(dp[j-1][k], dp[j][k-1]) + 1, dp[j-1][k-1]);
@@ -119,6 +133,7 @@ bool Downloader::GetId(const string &json, const string &track){
             }
         }
 
+        //RmLog(LOG_WARNING, to_wstring(dp[track.size()][song_infos[i].info.size()]).c_str());
         if(tdp > dp[track.size()][song_infos[i].info.size()]){
             tdp = dp[track.size()][song_infos[i].info.size()];
             ti = i;
@@ -126,10 +141,24 @@ bool Downloader::GetId(const string &json, const string &track){
     }
 
     // 相似度计算
-    int similarity = track.size() * 2.0 - track.size() * 0.6;
-    if(tdp > similarity){
+    int similarity = track.size() * 2.0 - track.size() * m_similarity;
+
+    if(ti < 0 || tdp > similarity){
         return false;
     }
+
+    /*wstring temp = L"tdp: ";
+    temp += to_wstring(tdp);
+    temp += L" similarity: ";
+    temp += to_wstring(similarity);
+    temp += L" track: ";
+    temp += to_wstring(track.size() * 2);
+    temp += L" s1: ";
+    temp += to_wstring(track.size());
+    temp += L" s2: ";
+    temp += to_wstring(song_infos[ti].info.size());
+    RmLog(LOG_WARNING, temp.c_str());*/
+
     m_id = song_infos[ti].id;
     return true;
 }
@@ -137,90 +166,74 @@ bool Downloader::GetId(const string &json, const string &track){
 bool Downloader::InitLRU(const string &path){
     std::filesystem::path dir(path);
     if (std::filesystem::exists(dir) == false) {
-        return false;
+        return !mkdir(path.c_str());
     }
     for (auto& it : std::filesystem::directory_iterator(path)) {
         string temp = it.path().stem().u8string();
+
+        wstring_convert<codecvt_utf8<wchar_t>> converter;
+
         temp = m_lru.insert(temp);
         if (temp.size()) {
-            remove((path + "/" + temp + ".lrc").c_str());
-            remove((path + "/" + temp + ".jpg").c_str());
+            DeleteFile(converter.from_bytes(path + "\\" + temp + ".lrc").c_str());
+            DeleteFile(converter.from_bytes(path + "\\" + temp + ".jpg").c_str());
         }
     }
-    /*
-    DIR* dir = opendir(path.c_str());
-    if(dir == nullptr){
-        // perror(m_download_path.c_str());
-        return false;
-    }
-    for(dirent *file; file = readdir(dir); ){
-        int i = strle(file->d_name) - 1;
-        while(i > 4 && file->d_name[i] != '.'){
-            --i;
-        }
-        if(i < 5){
-            continue;
-        }
-        string temp;
-        temp.assign(file->d_name, 0, i);
-        temp = m_lru.insert(temp);
-        if(temp.size()){
-            remove((path + "/" + temp + ".lrc").c_str());
-            remove((path + "/" + temp + ".jpg").c_str());
-        }
-    }*/
     return true;
 }
 
-bool Downloader::Init(const string &track){
+bool Downloader::InitId(const string &track){
     if(track.empty()){
         return false;
     }
     if(m_track == track){
         return true;
     }
-    
+
     wstring_convert<codecvt_utf8<wchar_t>> converter;
     string path = converter.to_bytes(m_download_path);
 
-    if(m_lru.empty()){
-        InitLRU(path);
-    }
-    
-    string info_list_path = "/api/search/get/?s=" + track + "&limit=1&type=1&offset=0";
+    string info_list_path = "/api/search/get/?s=" + track + "&limit=10&type=1&offset=0";
+    //string info_list_path = "/api/search/get/?s=" + track + "&limit=1&type=1&offset=0";
     
     if(auto res = m_client.Post(info_list_path)){
         if(res->status == 200){
             string temp = res->body;
-            /*int index1 = temp.find("\"songs\":[{\"id\":", 1);
-            if (index1 == string::npos) {
-                return false;
-            }
-            int index2 = temp.find(',', index1);
-            if (index2 == string::npos) {
-                return false;
-            }
-            m_id = temp.substr(index1 + 15, index2 - index1 - 15);*/
-            if (!GetId(temp, track)) {
+            if (GetId(temp, track) == false) {
+                // RmLog(LOG_WARNING, L"haha");
                 return false;
             }
             m_track = track;
-            
-            temp = m_lru.insert(track);
-            if(temp.size()){
-                remove((path + "/" + temp + ".lrc").c_str());
-                remove((path + "/" + temp + ".jpg").c_str());
-            }
 
+            //RmLog(LOG_WARNING, converter.from_bytes(track).c_str());
+            temp = m_lru.insert(track);
+            //RmLog(LOG_WARNING, converter.from_bytes(temp).c_str());
+            if(temp.size()){
+                //remove((path + "\\" + temp + ".lrc").c_str());
+                //remove((path + "\\" + temp + ".jpg").c_str());
+
+                DeleteFile(converter.from_bytes(path + "\\" + temp + ".lrc").c_str());
+                DeleteFile(converter.from_bytes(path + "\\" + temp + ".jpg").c_str());
+            }
             return true;
         }
     }
     return false;
 }
 
+bool Downloader::Init(const wstring &_path, uint32_t capacity, double similarity){
+    m_download_path = _path;
+    m_similarity    = similarity;
+    
+    m_lru.Update(capacity);
+
+    wstring_convert<codecvt_utf8<wchar_t>> converter;
+    string path = converter.to_bytes(m_download_path);
+    return InitLRU(path);
+}
+
 bool Downloader::DownloadLyric(const wstring &_track){
     if(m_download_path.empty()){
-        RmLog(LOG_WARNING, L"DownloadPath is empty");
         return false;
     }
     wstring_convert<codecvt_utf8<wchar_t>> converter;
@@ -230,7 +243,7 @@ bool Downloader::DownloadLyric(const wstring &_track){
         m_lyric_path = m_download_path + L"\\" +  _track + L".lrc";
         return true;
     }
-    if(Init(track) == false){
+    if(InitId(track) == false){
         return false;
     }
     string lyric_path = "/api/song/media?id=" + m_id;
@@ -243,7 +256,6 @@ bool Downloader::DownloadLyric(const wstring &_track){
                 m_lyric_path = m_download_path + L"\\" + _track + L".lrc";
                 return true;
             }
-            // wstring_convert<codecvt_utf8<wchar_t>> converter;
             RmLog(LOG_WARNING, converter.from_bytes(strerror(errno)).c_str());
         }
     }
@@ -252,26 +264,23 @@ bool Downloader::DownloadLyric(const wstring &_track){
 
 bool Downloader::DownloadCover(const wstring &_track){
     if(m_download_path.empty()){
-        RmLog(LOG_WARNING, L"DownloadPath is empty");
         return false;
     }
     wstring_convert<codecvt_utf8<wchar_t>> converter;
     string track = converter.to_bytes(_track);
 
     if(_waccess((m_download_path + L"\\" + _track + L".jpg").c_str(), 0) == 0){
-        // m_cover_path = _track + L".jpg";
-        
-        char buf[1024] = {};
-        // m_cover_path = converter.from_bytes(getcwd(buf, 1020));
         m_cover_path = m_download_path;
         m_cover_path += L"\\";
         m_cover_path += _track;
         m_cover_path += L".jpg";
         return true;
     }
-    if(Init(track) == false){
+
+    if(InitId(track) == false){
         return false;
     }
+
     string cover_info_path = "/api/song/detail/?id=" + m_id + "&ids=%5B" + m_id + "%5D";
     
     string img_url;
@@ -294,23 +303,18 @@ bool Downloader::DownloadCover(const wstring &_track){
         }
     }
 
-    // RmLog(LOG_WARNING, converter.from_bytes(img_url).c_str());
     if(auto res = m_client.Get(img_url)){
         if(res->status == 200){
             ofstream cover(m_download_path + L"\\" +  _track + L".jpg", ios::out | ios::binary);
             if (cover.is_open()) {
                 cover << res->body;
 
-                char buf[1024] = {};
-                // m_cover_path = converter.from_bytes(getcwd(buf, 1020));
                 m_cover_path = m_download_path;
                 m_cover_path += L"\\";
                 m_cover_path += _track;
                 m_cover_path += L".jpg";
-                // m_cover_path = _track + L".jpg";
                 return true;
             }
-            // wstring_convert<codecvt_utf8<wchar_t>> converter;
             RmLog(LOG_WARNING, converter.from_bytes(strerror(errno)).c_str());
         }
     }

@@ -5,14 +5,6 @@
 #include "Download.h"
 #include "Lyric.h"
 
-// enum PlayerName
-// {
-// 	PLAYER_KUWO,
-// 	PLAYER_KUGOU,
-// 	PLAYER_QQ,
-// 	PLAYER_BAIDU,
-// };
-
 enum MeasureType
 {
 	MEASURE_NONE,
@@ -46,8 +38,6 @@ class Manager
 public:
 	bool requireCover;
 	bool requireLyric;
-	uint32_t lyricOffset;
-	wstring downloadPath;
 	wstring name;
 	wstring playerPath;
 	wstring trackChangeAction;
@@ -61,7 +51,6 @@ private:
 	Manager()
 		: requireCover(false)
 		, requireLyric(false)
-		,lyricOffset(0)
 		,downloader()
 		,lyric()
 		,player(nullptr)
@@ -92,6 +81,7 @@ public:
 		}
 		managers.push_back(new Manager);
 		++managers.back()->ref;
+		managers.back()->name = name;
 		return managers.back();
 	}
 	static void FreeManager(const wstring &name){

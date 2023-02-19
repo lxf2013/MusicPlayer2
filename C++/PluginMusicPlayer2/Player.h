@@ -16,8 +16,6 @@ struct Player
 {
 	bool m_TrackChanged = false;
 	bool m_RequireCover = false;
-	// Lyric 		m_lyric;
-	// Downloader  m_downloader;
 
 	//加载与更新
 	virtual void Initialize() = 0;
