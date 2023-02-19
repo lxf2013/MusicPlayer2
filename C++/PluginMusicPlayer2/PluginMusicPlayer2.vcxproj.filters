@@ -12,6 +12,7 @@
     <ClCompile Include="Lyric.cpp" />
     <ClCompile Include="QQMusic.cpp" />
     <ClCompile Include="cJSON.c" />
+    <ClCompile Include="LRU.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaiduMusic.h" />
@@ -25,5 +26,6 @@
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="PluginMusicPlayer2.h" />
     <ClInclude Include="cJSON.h" />
+    <ClInclude Include="LRU.h" />
   </ItemGroup>
 </Project>
