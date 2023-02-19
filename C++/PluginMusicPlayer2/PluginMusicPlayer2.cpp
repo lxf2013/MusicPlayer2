@@ -74,7 +74,7 @@ PLUGIN_EXPORT void Reload(void* data, void* rm, double* maxValue)
 			manager->player = QQMusic::Create();
 		}
 		
-		int offset = RmReadInt(rm, L"LyricOffset", 4500);
+		int offset = RmReadInt(rm, L"LyricOffset", -500);
 		double similarity = RmReadDouble(rm, L"Similarity", 0.9);
 		LPCWSTR path = RmPathToAbsolute(rm, RmReadString(rm, L"DownloadPath", L"download"));
 		int     capacity = RmReadInt(rm, L"Capacity", 100);

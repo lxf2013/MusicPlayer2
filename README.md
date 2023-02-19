@@ -27,7 +27,7 @@ Plugin=MusicPlayer2.dll
 
 ;指定管理者(必须的)
 Manager=PlayerCenter
-PlayerType=Track
+Type=Track
 
 ; 歌曲信息显示
 [Show]
@@ -97,7 +97,7 @@ Y=150
 UpdateDivider=1
 DynamicVariables=1
 ```
-更详细的信息请下载发布的[皮肤](https://github.com/lxf2013/MusicPlayer2/releases/tag/MusicPlayer2)，里面有详细的示例
+更详细的信息请下载发布的[皮肤](https://github.com/lxf2013/MusicPlayer2/releases/tag/MusicPlayer2)，里面有详细的示例（**示例都是GB2312编码格式，如果打开是乱码请切换**）
 
 ## Rainmeter Plugin开发
 [Rainmeter SDK](https://github.com/rainmeter/rainmeter-plugin-sdk)
