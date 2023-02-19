@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ResourceCompile Include="PluginMusicPlayer2.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="PluginMusicPlayer2.cpp" />
+    <ClCompile Include="BaiduMusic.cpp" />
+    <ClCompile Include="Download.cpp" />
+    <ClCompile Include="KgMusic.cpp" />
+    <ClCompile Include="KwMusic.cpp" />
+    <ClCompile Include="Lyric.cpp" />
+    <ClCompile Include="QQMusic.cpp" />
+    <ClCompile Include="cJSON.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BaiduMusic.h" />
+    <ClInclude Include="Download.h" />
+    <ClInclude Include="httplib.h" />
+    <ClInclude Include="KgMusic.h" />
+    <ClInclude Include="KwMusic.h" />
+    <ClInclude Include="Lyric.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="QQMusic.h" />
+    <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="PluginMusicPlayer2.h" />
+    <ClInclude Include="cJSON.h" />
+  </ItemGroup>
+</Project>
