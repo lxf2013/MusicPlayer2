@@ -2,6 +2,7 @@
 #include "Download.h"
 #include <codecvt>
 #include <direct.h>
+#include <filesystem>
 #include "cJSON.h"
 #include "../../API/RainmeterAPI.h"
 
@@ -47,7 +48,7 @@ Downloader* Downloader::GetInstance() {
     return &downloader;
 }
 
-Downloader::Downloader(): m_id(), m_client("http://music.163.com"){
+Downloader::Downloader(): m_id(), m_client("http://music.163.com"), m_lru(2) {
 }
 
 void Downloader::GetSongList(const string &json, vector<SongInfo> &song_infos){
@@ -133,12 +134,57 @@ bool Downloader::GetId(const string &json, const string &track){
     return true;
 }
 
+bool Downloader::InitLRU(const string &path){
+    std::filesystem::path dir(path);
+    if (std::filesystem::exists(dir) == false) {
+        return false;
+    }
+    for (auto& it : std::filesystem::directory_iterator(path)) {
+        string temp = it.path().stem().u8string();
+        temp = m_lru.insert(temp);
+        if (temp.size()) {
+            remove((path + "/" + temp + ".lrc").c_str());
+            remove((path + "/" + temp + ".jpg").c_str());
+        }
+    }
+    /*
+    DIR* dir = opendir(path.c_str());
+    if(dir == nullptr){
+        // perror(m_download_path.c_str());
+        return false;
+    }
+    for(dirent *file; file = readdir(dir); ){
+        int i = strle(file->d_name) - 1;
+        while(i > 4 && file->d_name[i] != '.'){
+            --i;
+        }
+        if(i < 5){
+            continue;
+        }
+        string temp;
+        temp.assign(file->d_name, 0, i);
+        temp = m_lru.insert(temp);
+        if(temp.size()){
+            remove((path + "/" + temp + ".lrc").c_str());
+            remove((path + "/" + temp + ".jpg").c_str());
+        }
+    }*/
+    return true;
+}
+
 bool Downloader::Init(const string &track){
     if(track.empty()){
         return false;
     }
     if(m_track == track){
         return true;
+    }
+    
+    wstring_convert<codecvt_utf8<wchar_t>> converter;
+    string path = converter.to_bytes(m_download_path);
+
+    if(m_lru.empty()){
+        InitLRU(path);
     }
     
     string info_list_path = "/api/search/get/?s=" + track + "&limit=1&type=1&offset=0";
@@ -159,6 +205,13 @@ bool Downloader::Init(const string &track){
                 return false;
             }
             m_track = track;
+            
+            temp = m_lru.insert(track);
+            if(temp.size()){
+                remove((path + "/" + temp + ".lrc").c_str());
+                remove((path + "/" + temp + ".jpg").c_str());
+            }
+
             return true;
         }
     }

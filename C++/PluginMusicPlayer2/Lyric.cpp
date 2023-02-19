@@ -110,7 +110,8 @@ void Lyric::Update(){
 	DWORD time = GetTickCount();
     if(m_current_pos == 0){
         m_last_time = time + m_offset;
-        m_current_pos = (m_current_pos + 1) % m_lyric.size();
+        // m_current_pos = (m_current_pos + 1) % m_lyric.size();
+        m_current_pos = m_current_pos + 1;
         return ;
     }
     if(m_current_pos >= m_lyric.size()){
@@ -118,7 +119,8 @@ void Lyric::Update(){
         return ;
     }
     if(m_stop == false && time > m_last_time + m_lyric[m_current_pos].time){
-        m_current_pos = (m_current_pos + 1) % m_lyric.size();
+        // m_current_pos = (m_current_pos + 1) % m_lyric.size();
+        m_current_pos = m_current_pos + 1;
     }
 }
 LPCWSTR Lyric::GetLyric(int32_t pos){

@@ -3,6 +3,7 @@
 #include "StdAfx.h"
 #include <fstream>
 #include <string>
+#include "LRU.h"
 
 using namespace std;
 using namespace httplib;
@@ -19,7 +20,9 @@ private:
     wstring m_lyric_path;
     wstring m_cover_path;
     string  m_track;
+    LRU     m_lru;
 private:
+    bool InitLRU(const string &path);
     bool Init(const string &track);
     void GetSongList(const string &json, vector<SongInfo> &song_infos);
     bool GetId(const string &json, const string &track);
