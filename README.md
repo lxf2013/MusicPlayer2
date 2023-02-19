@@ -1,0 +1,2 @@
+# MusicPlayer2
+一个Rainmeter插件，基于MusicPlayer开发，在原来播放控制的基础上增加歌词，专辑搜索与下载，歌词解析与控制功能
