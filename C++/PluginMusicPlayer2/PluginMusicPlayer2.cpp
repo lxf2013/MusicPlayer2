@@ -195,7 +195,9 @@ PLUGIN_EXPORT double Update(void* data)
 		measure->manager->downloader.DownloadCover(player->GetTrack());
 	}
 	if(measure->manager->requireLyric){
-		if(player->m_TrackChanged && measure->manager->downloader.DownloadLyric(player->GetTrack())){
+		// if(player->m_TrackChanged && measure->manager->downloader.DownloadLyric(player->GetTrack())){
+		if(player->m_TrackChanged){
+			measure->manager->downloader.DownloadLyric(player->GetTrack());
 			measure->manager->lyric.Load(measure->manager->downloader.GetLyricPath());
 		}
 		measure->manager->lyric.Update();

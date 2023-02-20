@@ -105,11 +105,6 @@ bool Downloader::GetId(const string &json, const string &track){
     GetSongList(json, song_infos);
     int ti = -1, tdp = 0x3f3f3f3f;
 
-//wstring_convert<codecvt_utf8<wchar_t>> converter;
-//RmLog(LOG_WARNING, converter.from_bytes(track).c_str());
-
-//RmLog(LOG_WARNING, to_wstring(song_infos.size()).c_str());
-
     // 动态规划，找出相似度最高的一个
     for(uint32_t i=0; i < song_infos.size(); ++i){
         int dp[256][256] = {};
@@ -133,7 +128,6 @@ bool Downloader::GetId(const string &json, const string &track){
             }
         }
 
-        //RmLog(LOG_WARNING, to_wstring(dp[track.size()][song_infos[i].info.size()]).c_str());
         if(tdp > dp[track.size()][song_infos[i].info.size()]){
             tdp = dp[track.size()][song_infos[i].info.size()];
             ti = i;
@@ -146,18 +140,6 @@ bool Downloader::GetId(const string &json, const string &track){
     if(ti < 0 || tdp > similarity){
         return false;
     }
-
-    /*wstring temp = L"tdp: ";
-    temp += to_wstring(tdp);
-    temp += L" similarity: ";
-    temp += to_wstring(similarity);
-    temp += L" track: ";
-    temp += to_wstring(track.size() * 2);
-    temp += L" s1: ";
-    temp += to_wstring(track.size());
-    temp += L" s2: ";
-    temp += to_wstring(song_infos[ti].info.size());
-    RmLog(LOG_WARNING, temp.c_str());*/
 
     m_id = song_infos[ti].id;
     return true;
@@ -200,18 +182,12 @@ bool Downloader::InitId(const string &track){
         if(res->status == 200){
             string temp = res->body;
             if (GetId(temp, track) == false) {
-                // RmLog(LOG_WARNING, L"haha");
                 return false;
             }
             m_track = track;
 
-            //RmLog(LOG_WARNING, converter.from_bytes(track).c_str());
             temp = m_lru.insert(track);
-            //RmLog(LOG_WARNING, converter.from_bytes(temp).c_str());
             if(temp.size()){
-                //remove((path + "\\" + temp + ".lrc").c_str());
-                //remove((path + "\\" + temp + ".jpg").c_str());
-
                 DeleteFile(converter.from_bytes(path + "\\" + temp + ".lrc").c_str());
                 DeleteFile(converter.from_bytes(path + "\\" + temp + ".jpg").c_str());
             }
@@ -233,6 +209,7 @@ bool Downloader::Init(const wstring &_path, uint32_t capacity, double similarity
 }
 
 bool Downloader::DownloadLyric(const wstring &_track){
+    m_lyric_path = L"";
     if(m_download_path.empty()){
         return false;
     }
@@ -263,6 +240,7 @@ bool Downloader::DownloadLyric(const wstring &_track){
 }
 
 bool Downloader::DownloadCover(const wstring &_track){
+    m_cover_path = L"";
     if(m_download_path.empty()){
         return false;
     }
