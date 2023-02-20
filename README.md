@@ -1,5 +1,5 @@
 # MusicPlayer2
-一个Rainmeter插件，基于[MusicPlayer](https://github.com/df32/Rainmeter_Plugins/blob/master/Doc/MusicPlayer_1.2.txt)开发，在原来播放控制的基础上增加歌词，专辑搜索与下载，歌词解析与控制功能
+一个Rainmeter插件，基于[MusicPlayer](https://github.com/df32/Rainmeter_Plugins/blob/master/Doc/MusicPlayer_1.2.txt)开发，在原来播放控制的基础上增加歌词，专辑搜索与下载，缓存（下载时进行相似度匹配，过滤掉错误的歌词，采用LRU缓存），歌词解析与控制功能
 
 使用了filesystem，所以C++标准最低要达到c++17
 

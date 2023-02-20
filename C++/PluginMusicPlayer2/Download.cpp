@@ -53,18 +53,25 @@ void Downloader::GetSongList(const string &json, vector<SongInfo> &song_infos){
             if(result == nullptr){
                 break;
             }
+
             cJSON *songs = cJSON_GetObjectItem(result, "songs");
             if(songs == nullptr){
                 break;
             }
             int song_size = cJSON_GetArraySize(songs);
             for(int i=0; i<song_size; ++i){
+                SongInfo song_info;
                 cJSON *song = cJSON_GetArrayItem(songs, i);
                 if(song == nullptr){
                     continue;
                 }
-                
-                SongInfo song_info;
+
+                cJSON *duration = cJSON_GetObjectItem(song, "duration");
+                if(duration == nullptr){
+                    continue;
+                }
+                song_info.duration = duration->valueint;
+
                 cJSON *item = cJSON_GetObjectItem(song, "id");
                 if(item == nullptr){
                     continue;
@@ -142,6 +149,7 @@ bool Downloader::GetId(const string &json, const string &track){
     }
 
     m_id = song_infos[ti].id;
+    m_duration = song_infos[ti].duration;
     return true;
 }
 
@@ -176,7 +184,7 @@ bool Downloader::InitId(const string &track){
     string path = converter.to_bytes(m_download_path);
 
     string info_list_path = "/api/search/get/?s=" + track + "&limit=10&type=1&offset=0";
-    //string info_list_path = "/api/search/get/?s=" + track + "&limit=1&type=1&offset=0";
+    // string info_list_path = "/api/search/get/?s=" + track + "&limit=1&type=1&offset=0";
     
     if(auto res = m_client.Post(info_list_path)){
         if(res->status == 200){
@@ -223,14 +231,30 @@ bool Downloader::DownloadLyric(const wstring &_track){
     if(InitId(track) == false){
         return false;
     }
-    string lyric_path = "/api/song/media?id=" + m_id;
+    string lyric_path = "/api/song/lyric?lv=1&kv=1&tv=-1&id=" + m_id;
+    // string lyric_path = "/api/song/media?id=" + m_id;
 
     if(auto res = m_client.Post(lyric_path)){
         if(res->status == 200){
             ofstream lyric(m_download_path + L"\\" + _track + L".lrc", ios::out);
             if (lyric.is_open()) {
-                lyric << res->body;
-                m_lyric_path = m_download_path + L"\\" + _track + L".lrc";
+                if(cJSON *root = cJSON_Parse(res->body.c_str())){
+                    do{
+                        cJSON *lrc = cJSON_GetObjectItem(root, "lrc");
+                        if(lrc == nullptr){
+                            break;
+                        }
+
+                        cJSON *_lyric = cJSON_GetObjectItem(lrc, "lyric");
+                        if(_lyric == nullptr){
+                            break;
+                        }
+                        lyric << "[duration:" << m_duration << "]\n";
+                        lyric << _lyric->valuestring;
+                        m_lyric_path = m_download_path + L"\\" + _track + L".lrc";
+                    }while(0);
+                    cJSON_Delete(root);
+                }
                 return true;
             }
             RmLog(LOG_WARNING, converter.from_bytes(strerror(errno)).c_str());
@@ -278,6 +302,7 @@ bool Downloader::DownloadCover(const wstring &_track){
                 return false;
             }
             img_url = img_url.substr(index + 10, index1 - index - 10);
+            img_url += "?param=200y200";
         }
     }
 

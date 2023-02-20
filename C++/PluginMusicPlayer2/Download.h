@@ -13,10 +13,14 @@ class Downloader{
 private:
     struct SongInfo{
         string id;
+        string cover;
+        int duration;
         string info;
     };
 private:
     string  m_id;
+    int m_duration;
+
     Client  m_client;
     wstring m_lyric_path;
     wstring m_cover_path;
