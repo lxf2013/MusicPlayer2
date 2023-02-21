@@ -22,6 +22,7 @@ private:
     bool         m_stop;
     DWORD        m_stop_time;
     int          m_offset;
+    uint64_t     m_duration;
 
 private:
     uint64_t GetNum(const char *file_buf, uint32_t file_size, uint32_t &i);

@@ -32,8 +32,10 @@ bool Lyric::Init(int offset){
 bool Lyric::Load(const wstring &file){
     m_lyric = vector<Line>(1, {0, L""});
     m_current_pos = 0;
-    
+    m_duration = 0;
+
     do{
+        wstring_convert<codecvt_utf8<wchar_t>> converter;
         if(file.empty()){
             // return false;
             break;
@@ -55,10 +57,34 @@ bool Lyric::Load(const wstring &file){
                 continue;
             }
             uint64_t m = GetNum(file_buf, file_size, i);
-            if(file_buf[i++] != ':'){
+            if(file_buf[i] != ':'){
+                string key;
+                while(i<file_size && file_buf[i] != ':' && file_buf[i] != ']'){
+                    key += file_buf[i++];
+                }
+                if(file_buf[i++] != ':'){
+                    continue;
+                }
+                
+                if(key == "duration"){
+                    uint64_t num = GetNum(file_buf, file_size, i);
+                    if(file_buf[i++] != ']'){
+                        continue;
+                    }
+                    m_duration = num;
+                }else{
+                    string buf;
+                    while(i<file_size && file_buf[i] != ']' && file_buf[i] != '\\' && file_buf[i] != '"'){
+                        buf += file_buf[i++];
+                    }
+                    if(buf.empty()){
+                        continue;
+                    }
+                    m_lyric.push_back({0, converter.from_bytes(buf) });
+                }
                 continue;
             }
-            uint64_t s = GetNum(file_buf, file_size, i);
+            uint64_t s = GetNum(file_buf, file_size, ++i);
             if(file_buf[i++] != '.'){
                 continue;
             }
@@ -75,7 +101,7 @@ bool Lyric::Load(const wstring &file){
             if(buf.empty()){
                 continue;
             }
-            wstring_convert<codecvt_utf8<wchar_t>> converter;
+            // wstring_convert<codecvt_utf8<wchar_t>> converter;
             m_lyric.push_back({ms + s*1000 + m*60*1000, converter.from_bytes(buf) });
         }
 
@@ -83,7 +109,7 @@ bool Lyric::Load(const wstring &file){
         m_stop        = false;
     }while(0);
     
-    m_lyric.push_back({m_lyric.back().time + 1000, L""});
+    m_lyric.push_back({m_duration, L""});
     return true;
 }
 
