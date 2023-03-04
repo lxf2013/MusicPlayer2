@@ -1,4 +1,4 @@
-﻿#include "PluginMusicPlayer2.h"
+#include "PluginMusicPlayer2.h"
 #include "KwMusic.h"
 #include "QQMusic.h"
 #include "BaiduMusic.h"
@@ -29,25 +29,29 @@ PLUGIN_EXPORT void Reload(void* data, void* rm, double* maxValue)
 	Measure* measure = (Measure*)data;
 	measure->rm = rm;
 	
-	//³õÊ¼»¯ PlayerType
 	LPCWSTR type = RmReadString(rm, L"Type", L"");
 
 	if (_wcsicmp(L"Manager", type) == 0)
 	{
+		wstring name = RmGetSkinName(rm);
+		name += RmGetMeasureName(rm);
+
 		measure->type = MEASURE_MANAGER;
-		Manager *manager = Manager::GetManager(RmGetMeasureName(rm));
+		Manager *manager = Manager::GetManager(name);
 		if(manager){
-			wstring error = RmGetMeasureName(rm);
-			error += L" ÒÑ´æÔÚ£¬¿ÉÄÜÔÚ±¾ÎÄ¼þÖÐ£¬Ò²¿ÉÄÜÔÚÆäËüÎÄ¼þÖÐ";
+			// wstring error = RmGetMeasureName(rm);
+			// error += L" ÒÑ´æÔÚ£¬¿ÉÄÜÔÚ±¾ÎÄ¼þÖÐ£¬Ò²¿ÉÄÜÔÚÆäËüÎÄ¼þÖÐ";
+			wstring error = L"Manager: ";
+			error += RmGetMeasureName(rm);
+			error += L" already exists!";
 			RmLog(rm, LOG_WARNING, error.c_str());
 			measure->manager = manager;
 			return;
 		}
 
-		manager = Manager::AllocManager(RmGetMeasureName(rm));
+		manager = Manager::AllocManager(name);
 		measure->manager = manager;
 
-		//³õÊ¼»¯ PlayerName
 		LPCWSTR str = RmReadString(rm, L"PlayerName", L"");
 
 		if (!_wcsicmp(L"KwMusic", str))
@@ -68,14 +72,14 @@ PLUGIN_EXPORT void Reload(void* data, void* rm, double* maxValue)
 		}
 		else
 		{
-			wstring error = L"ÎÞÐ§µÄ PlayerName: ";
+			wstring error = L"invalid PlayerName: ";
 			error += str;
 			RmLog(rm, LOG_ERROR, error.c_str());
 			manager->player = QQMusic::Create();
 		}
 		
-		int offset = RmReadInt(rm, L"LyricOffset", -500);
-		double similarity = RmReadDouble(rm, L"Similarity", 0.9);
+		int offset = RmReadInt(rm, L"LyricOffset", -1500);
+		double similarity = RmReadDouble(rm, L"Similarity", 1.6);
 		LPCWSTR path = RmPathToAbsolute(rm, RmReadString(rm, L"DownloadPath", L"download"));
 		int     capacity = RmReadInt(rm, L"Capacity", 100);
 
@@ -84,6 +88,10 @@ PLUGIN_EXPORT void Reload(void* data, void* rm, double* maxValue)
 
 		manager->playerPath = RmReadString(rm, L"PlayerPath", L"");
 		manager->trackChangeAction = RmReadString(rm, L"TrackChangeAction", L"");
+		manager->lyricChangeAction = RmReadString(rm, L"LyricChangeAction", L"");
+		manager->coverChangeAction = RmReadString(rm, L"CoverChangeAction", L"");
+		manager->defaultCover      = RmPathToAbsolute(rm, RmReadString(rm, L"DefaultCover", L""));
+		manager->defaultLyric      = RmPathToAbsolute(rm, RmReadString(rm, L"DefaultLyric", L""));
 	}
 	else if (_wcsicmp(L"Title", type) == 0)
 	{
@@ -97,7 +105,7 @@ PLUGIN_EXPORT void Reload(void* data, void* rm, double* maxValue)
 	{
 		measure->type = MEASURE_TRACK;
 	}
-	else if (_wcsicmp(L"PLAYERPATH", type) == 0)
+	else if (_wcsicmp(L"PlayerPath", type) == 0)
 	{
 		measure->type = MEASURE_PLAYERPATH;
 	}
@@ -175,7 +183,7 @@ PLUGIN_EXPORT void Reload(void* data, void* rm, double* maxValue)
 	}
 	else
 	{
-		std::wstring error = L"无效的 Type: ";
+		std::wstring error = L"invalid Type: ";
 		error += type;
 		RmLog(rm, LOG_WARNING, error.c_str());
 	}
@@ -193,19 +201,27 @@ PLUGIN_EXPORT double Update(void* data)
 
 	if(measure->manager->requireCover && player->m_TrackChanged){
 		measure->manager->downloader.DownloadCover(player->GetTrack());
+		if (!measure->manager->coverChangeAction.empty()){
+			RmExecute(RmGetSkin(measure->rm), measure->manager->coverChangeAction.c_str());
+		}
 	}
 	if(measure->manager->requireLyric){
-		// if(player->m_TrackChanged && measure->manager->downloader.DownloadLyric(player->GetTrack())){
 		if(player->m_TrackChanged){
 			measure->manager->downloader.DownloadLyric(player->GetTrack());
 			measure->manager->lyric.Load(measure->manager->downloader.GetLyricPath());
 		}
-		measure->manager->lyric.Update();
+		if(measure->manager->lyric.GetStat() == false){
+			measure->manager->lyric.Load(measure->manager->defaultLyric);
+		}
+		if(measure->manager->lyric.Update() && !measure->manager->lyricChangeAction.empty()){
+			RmExecute(RmGetSkin(measure->rm), measure->manager->lyricChangeAction.c_str());
+		}
 	}
+
 	if (player->m_TrackChanged && !measure->manager->trackChangeAction.empty()){
 		RmExecute(RmGetSkin(measure->rm), measure->manager->trackChangeAction.c_str());
 	}
-
+	
 	return 0.0;
 }
 
@@ -213,9 +229,13 @@ PLUGIN_EXPORT LPCWSTR GetString(void* data)
 {
 	Measure* measure = (Measure*)data;
 	if(measure->manager == nullptr){
-		measure->manager = Manager::GetManager(RmReadString(measure->rm, L"Manager", L""));
+		wstring name = RmGetSkinName(measure->rm);
+		name += RmReadString(measure->rm, L"Manager", L"");
+
+		measure->manager = Manager::GetManager(name);
+		// measure->manager = Manager::GetManager(RmReadString(measure->rm, L"Manager", L""));
 		if(measure->manager == nullptr){
-			wstring error = L"Î´ÕÒµ½ Manager: ";
+			wstring error = L"not exist Manager: ";
 			error += RmReadString(measure->rm, L"Manager", L"");
 			RmLog(measure->rm, LOG_WARNING, error.c_str());
 			return nullptr;
@@ -251,10 +271,11 @@ PLUGIN_EXPORT LPCWSTR GetString(void* data)
 		return buffer;
 		break;
 
-	case MEASURE_COVER:
+	case MEASURE_COVER:{
 		manager->requireCover = true;
-		return manager->downloader.GetCoverPath();
-		break;
+		LPCWSTR ret = manager->downloader.GetCoverPath();
+		return _wcsicmp(L"", ret)? ret: manager->defaultCover.c_str();
+	}break;
 
 	case MEASURE_LRC_6:
 		manager->requireLyric = true;
@@ -345,7 +366,7 @@ PLUGIN_EXPORT void ExecuteBang(void* data, LPCWSTR args)
 {
 	Measure* measure = (Measure*)data;
 	if(measure->manager == nullptr){
-		RmLog(measure->rm, LOG_WARNING, L" ManagerÎª¿Õ");
+		RmLog(measure->rm, LOG_WARNING, L" Manager not exist");
 		return;
 	}
 	Player* player = measure->manager->player;
@@ -424,10 +445,6 @@ PLUGIN_EXPORT void ExecuteBang(void* data, LPCWSTR args)
 
 
 
-/*
-**·¢ËÍ°´¼üÏûÏ¢
-*/
-//ÏòÈ«¾Ö·¢ËÍµ¥Ò»¼ü»÷
 void SendKey(WORD key)
 {
 	KEYBDINPUT kbi = { 0 };
@@ -440,21 +457,21 @@ void SendKey(WORD key)
 
 	SendInput(1, &input, sizeof(INPUT));
 }
-//Ïò´°¿Ú·¢ËÍµ¥Ò»¼ü»÷
+
 void SendKey(HWND hWnd, UINT key)
 {
 	UINT VSC = MapVirtualKey(key, 0);
 	PostMessage(hWnd, WM_KEYDOWN, key, 0x00000001 | VSC << 16);
 	PostMessage(hWnd, WM_KEYUP, key, 0xC0000001 | VSC << 16);
 }
-//Ïò´°¿Ú·¢ËÍ´øCtrlµÄ¼ü»÷
+
 void SendKey(HWND hWnd, UINT key, bool ctrl)
 {
 	UINT VSC_CTRL = MapVirtualKey(VK_CONTROL, 0) << 16;
 	UINT VSC = MapVirtualKey(key, 0) << 16;
 
 	if (key >= 'A' && key <= 'Z')
-	{	//×ÖÄ¸
+	{
 
 		PostMessage(hWnd, WM_KEYDOWN, VK_CONTROL, 0x00000001 | VSC_CTRL);
 		PostMessage(hWnd, WM_KEYDOWN, key, 0x00000001 | VSC);
@@ -463,14 +480,14 @@ void SendKey(HWND hWnd, UINT key, bool ctrl)
 		PostMessage(hWnd, WM_KEYUP, VK_CONTROL, 0xC0000001 | VSC_CTRL);
 	}
 	else
-	{	//·½Ïò¼ü
+	{
 		PostMessage(hWnd, WM_KEYDOWN, VK_CONTROL, 0x00000001 | VSC_CTRL);
 		PostMessage(hWnd, WM_KEYDOWN, key, 0x01000001 | VSC);
 		PostMessage(hWnd, WM_KEYUP, key, 0xC1000001 | VSC);
 		PostMessage(hWnd, WM_KEYUP, VK_CONTROL, 0xC0000001 | VSC_CTRL);
 	}
 }
-//ÏòÈ«¾Ö·¢ËÍ´øÐÞÊÎ¼üµÄ¼ü»÷
+
 void SendKey(BYTE key, bool ctrl, bool shift, bool alt)
 {
 	if (ctrl)

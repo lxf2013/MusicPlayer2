@@ -38,9 +38,14 @@ class Manager
 public:
 	bool requireCover;
 	bool requireLyric;
+
 	wstring name;
 	wstring playerPath;
 	wstring trackChangeAction;
+	wstring lyricChangeAction;
+	wstring coverChangeAction;
+	wstring defaultCover;
+	wstring defaultLyric;
 
 	Downloader downloader;
 	Lyric      lyric;
