@@ -30,6 +30,51 @@ bool Lyric::Init(int offset){
     return true;
 }
 
+bool Lyric::GetTranslate(const char *file_buf, uint32_t file_size, uint32_t &i){
+    vector<Line> lyric;
+
+    wstring_convert<codecvt_utf8<wchar_t>> converter;
+    
+    while(i<file_size){
+        if(file_buf[i++] != '['){
+            continue;
+        }
+        uint64_t m = GetNum(file_buf, file_size, i);
+        if(file_buf[i++] != ':'){
+            continue;
+        }
+        uint64_t s = GetNum(file_buf, file_size, i);
+        if(file_buf[i++] != '.'){
+            continue;
+        }
+        uint64_t ms = GetNum(file_buf, file_size, i);
+        if(file_buf[i++] != ']'){
+            continue;
+        }
+        ms = (ms < 100)? ms * 10: ms;
+        string buf;
+        while(i<file_size && file_buf[i] != '[' && file_buf[i] != '\\' && file_buf[i] != '"'){
+            buf += file_buf[i++];
+        }
+        if(buf.empty()){
+            continue;
+        }
+        lyric.push_back({ms + s*1000 + m*60*1000, converter.from_bytes(buf) });
+    }
+
+    for(int i=0, j=0; i<lyric.size(); ++i){
+        while(j<m_lyric.size() && lyric[i].time != m_lyric[j].time){
+            ++j;
+        }
+        if(j<m_lyric.size()){
+            m_lyric[j].tlrc = lyric[i].lrc;
+        }else{
+            break;
+        }
+    }
+    return true;
+}
+
 bool Lyric::Load(const wstring &file){
     m_lyric = vector<Line>(1, {0, L""});
     m_current_pos = 0;
@@ -60,6 +105,10 @@ bool Lyric::Load(const wstring &file){
             string key;
             while(i<file_size && file_buf[i] != ':' && file_buf[i] != ']'){
                 key += file_buf[i++];
+            }
+            if(key == "translate"){
+                (file_buf[i++] == ']') && GetTranslate(file_buf, file_size, i);
+                break;
             }
             if(file_buf[i++] != ':'){
                 continue;
@@ -160,4 +209,11 @@ LPCWSTR Lyric::GetLyric(int32_t pos){
         return m_lyric[0].lrc.c_str();
     }
     return m_lyric[m_current_pos + pos].lrc.c_str();
+}
+
+LPCWSTR Lyric::GetTLyric(int32_t pos){
+    if(uint32_t(m_current_pos + pos) >= m_lyric.size()){
+        return m_lyric[0].tlrc.c_str();
+    }
+    return m_lyric[m_current_pos + pos].tlrc.c_str();
 }

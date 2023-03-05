@@ -13,6 +13,7 @@ private:
     struct Line{
         uint64_t time;
         wstring   lrc;
+        wstring   tlrc;
     };
 
 private:
@@ -27,6 +28,7 @@ private:
 
 private:
     uint64_t GetNum(const char *file_buf, uint32_t file_size, uint32_t &i);
+    bool GetTranslate(const char *file_buf, uint32_t file_size, uint32_t &i);
 
 public:
     Lyric();
@@ -40,4 +42,5 @@ public:
     bool Update();
     bool GetStat();
     LPCWSTR GetLyric(int32_t pos);
+    LPCWSTR GetTLyric(int32_t pos);
 };

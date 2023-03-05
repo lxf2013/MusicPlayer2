@@ -181,6 +181,70 @@ PLUGIN_EXPORT void Reload(void* data, void* rm, double* maxValue)
 	{
 		measure->type = MEASURE_LRC9;
 	}
+	else if (_wcsicmp(L"tlrc_6", type) == 0)
+	{
+		measure->type = MEASURE_TLRC_6;
+	}
+	else if (_wcsicmp(L"tlrc_5", type) == 0)
+	{
+		measure->type = MEASURE_TLRC_5;
+	}
+	else if (_wcsicmp(L"tlrc_4", type) == 0)
+	{
+		measure->type = MEASURE_TLRC_4;
+	}
+	else if (_wcsicmp(L"tlrc_3", type) == 0)
+	{
+		measure->type = MEASURE_TLRC_3;
+	}
+	else if (_wcsicmp(L"tlrc_2", type) == 0)
+	{
+		measure->type = MEASURE_TLRC_2;
+	}
+	else if (_wcsicmp(L"tlrc_1", type) == 0)
+	{
+		measure->type = MEASURE_TLRC_1;
+	}
+	else if (_wcsicmp(L"tlrc0", type) == 0)
+	{
+		measure->type = MEASURE_TLRC0;
+	}
+	else if (_wcsicmp(L"tlrc1", type) == 0)
+	{
+		measure->type = MEASURE_TLRC1;
+	}
+	else if (_wcsicmp(L"tlrc2", type) == 0)
+	{
+		measure->type = MEASURE_TLRC2;
+	}
+	else if (_wcsicmp(L"tlrc3", type) == 0)
+	{
+		measure->type = MEASURE_TLRC3;
+	}
+	else if (_wcsicmp(L"tlrc4", type) == 0)
+	{
+		measure->type = MEASURE_TLRC4;
+	}
+	else if (_wcsicmp(L"tlrc5", type) == 0)
+	{
+		measure->type = MEASURE_TLRC5;
+	}
+	else if (_wcsicmp(L"tlrc6", type) == 0)
+	{
+		measure->type = MEASURE_TLRC6;
+	}
+	else if (_wcsicmp(L"tlrc7", type) == 0)
+	{
+		measure->type = MEASURE_TLRC7;
+	}
+	else if (_wcsicmp(L"tlrc8", type) == 0)
+	{
+		measure->type = MEASURE_TLRC8;
+	}
+	else if (_wcsicmp(L"tlrc9", type) == 0)
+	{
+		measure->type = MEASURE_TLRC9;
+	}
 	else
 	{
 		std::wstring error = L"invalid Type: ";
@@ -355,6 +419,86 @@ PLUGIN_EXPORT LPCWSTR GetString(void* data)
 	case MEASURE_LRC9:
 		manager->requireLyric = true;
 		return manager->lyric.GetLyric(9);
+		break;
+		
+	case MEASURE_TLRC_6:
+		manager->requireLyric = true;
+		return manager->lyric.GetTLyric(-6);
+		break;
+
+	case MEASURE_TLRC_5:
+		manager->requireLyric = true;
+		return manager->lyric.GetTLyric(-5);
+		break;
+
+	case MEASURE_TLRC_4:
+		manager->requireLyric = true;
+		return manager->lyric.GetTLyric(-4);
+		break;
+
+	case MEASURE_TLRC_3:
+		manager->requireLyric = true;
+		return manager->lyric.GetTLyric(-3);
+		break;
+
+	case MEASURE_TLRC_2:
+		manager->requireLyric = true;
+		return manager->lyric.GetTLyric(-2);
+		break;
+
+	case MEASURE_TLRC_1:
+		manager->requireLyric = true;
+		return manager->lyric.GetTLyric(-1);
+		break;
+
+	case MEASURE_TLRC0:
+		manager->requireLyric = true;
+		return manager->lyric.GetTLyric(0);
+		break;
+
+	case MEASURE_TLRC1:
+		manager->requireLyric = true;
+		return manager->lyric.GetTLyric(1);
+		break;
+
+	case MEASURE_TLRC2:
+		manager->requireLyric = true;
+		return manager->lyric.GetTLyric(2);
+		break;
+
+	case MEASURE_TLRC3:
+		manager->requireLyric = true;
+		return manager->lyric.GetTLyric(3);
+		break;
+
+	case MEASURE_TLRC4:
+		manager->requireLyric = true;
+		return manager->lyric.GetTLyric(4);
+		break;
+
+	case MEASURE_TLRC5:
+		manager->requireLyric = true;
+		return manager->lyric.GetTLyric(5);
+		break;
+
+	case MEASURE_TLRC6:
+		manager->requireLyric = true;
+		return manager->lyric.GetTLyric(6);
+		break;
+
+	case MEASURE_TLRC7:
+		manager->requireLyric = true;
+		return manager->lyric.GetTLyric(7);
+		break;
+
+	case MEASURE_TLRC8:
+		manager->requireLyric = true;
+		return manager->lyric.GetTLyric(8);
+		break;
+
+	case MEASURE_TLRC9:
+		manager->requireLyric = true;
+		return manager->lyric.GetTLyric(9);
 		break;
 	}
 

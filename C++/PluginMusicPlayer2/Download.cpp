@@ -252,6 +252,18 @@ bool Downloader::DownloadLyric(const wstring &_track){
                         lyric << "[duration:" << m_duration << "]\n";
                         lyric << _lyric->valuestring;
                         m_lyric_path = m_download_path + L"\\" + _track + L".lrc";
+
+                        cJSON *tlrc = cJSON_GetObjectItem(root, "tlyric");
+                        if(tlrc == nullptr){
+                            break;
+                        }
+
+                        cJSON *tlyric = cJSON_GetObjectItem(tlrc, "lyric");
+                        if(tlyric == nullptr){
+                            break;
+                        }
+                        lyric << "[translate]\n";
+                        lyric << tlyric->valuestring;
                     }while(0);
                     cJSON_Delete(root);
                 }
