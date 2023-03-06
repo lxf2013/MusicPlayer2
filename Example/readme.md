@@ -1,5 +1,6 @@
 
 * 主Measure
+>在同一个皮肤中不建议有多个同名的Manager(因为可以跨文件调用)
 >```ini
 >[PlayerCenter]
 >Measure=Plugin
@@ -146,4 +147,6 @@
 >|VolumeUp|增大音量|
 >|VolumeDown|减小音量|
 >
->本插件基于MusicPlayer开发，更多MusicPlayer相关的信息请查看[MusicPlayer说明](https://github.com/df32/Rainmeter_Plugins/blob/master/Doc/MusicPlayer_1.2.txt)
+本插件基于MusicPlayer开发，更多MusicPlayer相关的信息请查看[MusicPlayer说明](https://github.com/df32/Rainmeter_Plugins/blob/master/Doc/MusicPlayer_1.2.txt)
+
+支持同一皮肤内[跨文件调用](./跨文件)

@@ -33,7 +33,15 @@ PLUGIN_EXPORT void Reload(void* data, void* rm, double* maxValue)
 
 	if (_wcsicmp(L"Manager", type) == 0)
 	{
-		wstring name = RmGetSkinName(rm);
+		// wstring name = RmGetSkinName(rm);
+		wstring temp = RmGetSkinName(rm);
+		wstring name;
+		for (auto wch : temp) {
+			if (wch == '\\') {
+				break;
+			}
+			name += wch;
+		}
 		name += RmGetMeasureName(rm);
 
 		measure->type = MEASURE_MANAGER;
@@ -293,7 +301,15 @@ PLUGIN_EXPORT LPCWSTR GetString(void* data)
 {
 	Measure* measure = (Measure*)data;
 	if(measure->manager == nullptr){
-		wstring name = RmGetSkinName(measure->rm);
+		// wstring name = RmGetSkinName(measure->rm);
+		wstring temp = RmGetSkinName(measure->rm);
+		wstring name;
+		for (auto wch : temp) {
+			if (wch == '\\') {
+				break;
+			}
+			name += wch;
+		}
 		name += RmReadString(measure->rm, L"Manager", L"");
 
 		measure->manager = Manager::GetManager(name);

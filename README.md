@@ -5,6 +5,7 @@
 ## 快速开始
 ```ini
 ==========================Manager，管理整个插件的配置，播放器信息的获取，歌词，专辑的获取=====================
+; 在同一个皮肤中不建议有多个同名的Manager（因为可以跨文件调用）
 [PlayerCenter]
 Measure=Plugin
 Plugin=MusicPlayer2.dll
@@ -94,7 +95,7 @@ ImageName=[Cover]
 W=120
 DynamicVariables=1
 ```
-更详细的信息请下载发布的[皮肤](https://github.com/lxf2013/MusicPlayer2/releases)，里面有详细的示例（**示例都是GB2312编码格式，如果打开是乱码请切换**），[相关文档](https://github.com/lxf2013/MusicPlayer2/blob/main/Example/readme.md)，[示例](https://github.com/lxf2013/MusicPlayer2/tree/main/Example)
+更详细的信息请下载发布的[皮肤](https://github.com/lxf2013/MusicPlayer2/releases)，里面有详细的示例（**示例都是GB2312编码格式，如果打开是乱码请切换**），[相关文档](./Example/readme.md)，[示例](./Example)
 
 ## Rainmeter Plugin开发
 [Rainmeter SDK](https://github.com/rainmeter/rainmeter-plugin-sdk)
