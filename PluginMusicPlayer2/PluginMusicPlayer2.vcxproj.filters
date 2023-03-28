@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ResourceCompile Include="PluginMusicPlayer2.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Core\Core.cpp" />
+    <ClCompile Include="Lyric\Lyric.cpp" />
+    <ClCompile Include="Player\BaiduMusic.cpp" />
+    <ClCompile Include="Player\CloudMusic.cpp" />
+    <ClCompile Include="Player\KgMusic.cpp" />
+    <ClCompile Include="Player\KwMusic.cpp" />
+    <ClCompile Include="Player\QQMusic.cpp" />
+    <ClCompile Include="Resource\Download.cpp" />
+    <ClCompile Include="Resource\LRU.cpp" />
+    <ClCompile Include="Resource\Resource.cpp" />
+    <ClCompile Include="Task\ITask.cpp" />
+    <ClCompile Include="ThirdPart\cJSON.c" />
+    <ClCompile Include="common.cpp" />
+    <ClCompile Include="PluginMusicPlayer2.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Core\Core.h" />
+    <ClInclude Include="Core\TaskCenter.h" />
+    <ClInclude Include="Lyric\Lyric.h" />
+    <ClInclude Include="Player\BaiduMusic.h" />
+    <ClInclude Include="Player\CloudMusic.h" />
+    <ClInclude Include="Player\IPlayer.h" />
+    <ClInclude Include="Player\KgMusic.h" />
+    <ClInclude Include="Player\KwMusic.h" />
+    <ClInclude Include="Player\QQMusic.h" />
+    <ClInclude Include="Resource\Download.h" />
+    <ClInclude Include="Resource\LRU.h" />
+    <ClInclude Include="Resource\Resource.h" />
+    <ClInclude Include="Task\CoverCallBackTask.h" />
+    <ClInclude Include="Task\CoverUpdateTask.h" />
+    <ClInclude Include="Task\ITask.h" />
+    <ClInclude Include="Task\LyricCallBackTask.h" />
+    <ClInclude Include="Task\LyricTask.h" />
+    <ClInclude Include="Task\LyricUpdateTask.h" />
+    <ClInclude Include="Task\PlayerCallBackTask.h" />
+    <ClInclude Include="Task\PlayerTask.h" />
+    <ClInclude Include="ThirdPart\cJSON.h" />
+    <ClInclude Include="ThirdPart\httplib.h" />
+    <ClInclude Include="ThirdPart\RainmeterAPI.h" />
+    <ClInclude Include="common.h" />
+    <ClInclude Include="PluginMusicPlayer2.h" />
+  </ItemGroup>
+</Project>

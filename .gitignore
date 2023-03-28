@@ -1,8 +1,9 @@
 
 # 忽略相关目录
-C++/.vs
-C++/PluginMusicPlayer2/x32
-C++/PluginMusicPlayer2/x64
+PluginMusicPlayer2/.vs
+PluginMusicPlayer2/.vscode
+PluginMusicPlayer2/x32
+PluginMusicPlayer2/x64
 
 # 不忽略的目录
-!API
+# !API
