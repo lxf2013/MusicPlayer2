@@ -85,11 +85,8 @@ const std::wstring &Resource::GetCoverPath(const std::wstring &_track){
 bool Resource::IsDefault(const std::wstring &_track){
     std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
     std::string track = converter.to_bytes(_track);
-// RmLog(LOG_WARNING, _track.c_str());
     if (m_failed.Query(track) || _track.empty()) {
-// RmLog(LOG_WARNING, L"true");
         return true;
     }
-// RmLog(LOG_WARNING, L"false");
     return false;
 }

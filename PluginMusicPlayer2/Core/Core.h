@@ -20,6 +20,7 @@ public:
 	Lyric        lyric;
 	Audio       *audio  = nullptr;
 	IPlayer     *player = nullptr;
+	unsigned int timeout = 5000;
 };
 
 class Core{

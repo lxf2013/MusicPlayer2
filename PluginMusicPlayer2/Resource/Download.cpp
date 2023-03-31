@@ -223,7 +223,7 @@ Result<std::wstring> Downloader::DownloadLyric(const std::wstring &_track){
     if(result.err_code != ErrorInfo::OK){
         return Result<std::wstring>(L"", result.err_code, result.msg);
     }
-    
+
     std::string lyric_path = "/api/song/lyric?lv=1&kv=1&tv=-1&id=" + result.result;
     // string lyric_path = "/api/song/media?id=" + m_id;
 

@@ -12,7 +12,7 @@ Lyric::Lyric()
     , m_stop(true)
     , m_stop_time(0) 
     , m_offset(0)
-    , m_stat(false) {
+    /*, m_stat(false)*/ {
 }
 
 uint64_t Lyric::GetNum(const char *file_buf, uint32_t file_size, uint32_t &i){
@@ -53,7 +53,7 @@ bool Lyric::GetTranslate(const char *file_buf, uint32_t file_size, uint32_t &i){
         }
         ms = (ms < 100)? ms * 10: ms;
         std::string buf;
-        while(i<file_size && file_buf[i] != '[' && file_buf[i] != '\\' && file_buf[i] != '"'){
+        while(i<file_size && file_buf[i] != '[' && file_buf[i] != '\\' && file_buf[i] != '"' && file_buf[i] != '\r' && file_buf[i] != '\n'){
             buf += file_buf[i++];
         }
         if(buf.empty()){
@@ -79,7 +79,7 @@ bool Lyric::Load(const std::wstring &file){
     m_lyric = std::vector<Line>(1, {0, L""});
     m_current_pos = 0;
     m_duration = 0;
-    m_stat     = false;
+    // m_stat     = false;
 
     std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
     if(file.empty()){
@@ -122,7 +122,7 @@ bool Lyric::Load(const std::wstring &file){
                 m_duration = num;
             }else{
                 std::string buf;
-                while(i<file_size && file_buf[i] != ']' && file_buf[i] != '\\' && file_buf[i] != '"'){
+                while(i<file_size && file_buf[i] != ']' && file_buf[i] != '\\' && file_buf[i] != '"' && file_buf[i] != '\r' && file_buf[i] != '\n'){
                     buf += file_buf[i++];
                 }
                 if(buf.empty()){
@@ -142,7 +142,7 @@ bool Lyric::Load(const std::wstring &file){
         }
         ms = (ms < 100)? ms * 10: ms;
         std::string buf;
-        while(i<file_size && file_buf[i] != '[' && file_buf[i] != '\\' && file_buf[i] != '"'){
+        while(i<file_size && file_buf[i] != '[' && file_buf[i] != '\\' && file_buf[i] != '"' && file_buf[i] != '\r' && file_buf[i] != '\n'){
             buf += file_buf[i++];
         }
         if(buf.empty()){
@@ -153,15 +153,16 @@ bool Lyric::Load(const std::wstring &file){
 
     delete[] file_buf;
     m_stop        = false;
-    m_stat        = true;
+    // m_stat        = true;
     
     m_lyric.push_back({m_duration, L""});
+    m_last_time = GetTickCount() + m_offset;
     return true;
 }
 
 void Lyric::Stop(){
     if(m_stop == false){
-        m_stop_time = GetTickCount();
+        m_stop_time = GetTickCount() + 800;
         m_stop = true;
     }
 }
@@ -201,11 +202,12 @@ void Lyric::StopOrStart(){
 bool Lyric::Update(DWORD time){
 	// DWORD time = GetTickCount();
     if(m_current_pos == 0){
-        m_last_time = time + m_offset;
         ++m_current_pos;
         return true;
     }
     if(m_current_pos+1 >= m_lyric.size()){
+        // m_last_time = time + m_offset - 300;
+        m_last_time = time + m_offset + 300;
         m_current_pos = 0;
         return true;
     }
@@ -216,8 +218,12 @@ bool Lyric::Update(DWORD time){
     return false;
 }
 
-bool Lyric::GetStat(){
-    return m_stat;
+// bool Lyric::GetStat(){
+//     return m_stat;
+// }
+
+bool Lyric::IsEnd(){
+    return m_current_pos+2 == m_lyric.size() && m_lyric.size() > 2;
 }
 
 LPCWSTR Lyric::GetLyric(int32_t pos){

@@ -12,7 +12,7 @@ public:
     ITask *Next(DWORD time) override{
         if(CoreData *data = Core::GetData(m_name_space)){
             if(data->resource.IsDefault(data->player->GetTrack()) == false){
-                data->lyric.Stop(time - 500);
+                data->lyric.Stop(GetTickCount() - data->timeout - 1300);
                 Core::GetTaskCenter()->StopTask(m_name_space, L"LyricTask");
             }
         }

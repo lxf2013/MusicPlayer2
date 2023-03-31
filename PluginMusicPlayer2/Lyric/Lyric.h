@@ -24,7 +24,7 @@ private:
     DWORD        m_stop_time;
     int          m_offset;
     uint64_t     m_duration;
-    bool         m_stat;
+    // bool         m_stat;
 
 private:
     uint64_t GetNum(const char *file_buf, uint32_t file_size, uint32_t &i);
@@ -42,7 +42,8 @@ public:
     void Start(DWORD time);
     void StopOrStart();
     bool Update(DWORD time);
-    bool GetStat();
+    // bool GetStat();
+    bool IsEnd();
     LPCWSTR GetLyric(int32_t pos);
     LPCWSTR GetTLyric(int32_t pos);
 };

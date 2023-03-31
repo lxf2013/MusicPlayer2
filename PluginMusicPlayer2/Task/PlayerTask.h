@@ -21,7 +21,6 @@ public:
         m_last_time = time;
 
         if(CoreData *data = Core::GetData(m_name_space)){
-// RmLog(LOG_WARNING, L"haha");
             if(data->player->Update(time)){
                 ITask *player_callback = Core::GetTaskCenter()->GetTask(m_name_space, L"PlayerCallBackTask");
                 ITask *cover_update    = Core::GetTaskCenter()->GetTask(m_name_space, L"CoverUpdateTask");
