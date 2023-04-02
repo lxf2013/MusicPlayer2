@@ -1,5 +1,5 @@
 # MusicPlayer2
-一个Rainmeter插件，基于[MusicPlayer](https://github.com/df32/Rainmeter_Plugins/tree/master/MusicPlayer)开发，在原来播放控制的基础上增加歌词，专辑搜索与下载，缓存（下载时进行相似度匹配，过滤掉错误的歌词，采用LRU缓存），歌词解析与控制，声音检测功能
+一个Rainmeter插件，基于[MusicPlayer](https://github.com/df32/Rainmeter_Plugins)开发，在原来播放控制的基础上增加歌词，专辑搜索与下载，缓存（下载时进行相似度匹配，过滤掉错误的歌词，采用LRU缓存），歌词解析与控制，声音检测功能
 
 ## 效果图
 
