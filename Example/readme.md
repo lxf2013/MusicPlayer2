@@ -1,4 +1,4 @@
-<center>MusicPlayer2使用手册</center>
+# MusicPlayer2使用手册
 
 ## 示例文件
 
