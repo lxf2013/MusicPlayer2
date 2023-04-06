@@ -16,7 +16,7 @@
 
 ```ini
 [Rainmeter]
-; 建议值，太大导致歌词，播放状态等更新太慢
+; 建议值，太大导致歌词，播放状态等更新太慢，太小对CPU的消耗很大
 Update=100
 
 [PlayerCenter]
@@ -32,7 +32,7 @@ PlayerName=QQMusic
 |是否必须|配置|值|描述|
 |:---:|:---:|:---:|:---:|
 |必须|PlayerName|QQMusic（QQ音乐），KwMusic（酷我音乐），KgMusic（酷狗音乐），BaiduMusic（百度音乐），CloudMusic（网易云音乐）|指定播放器类型|
-|可选|LyricOffset|-800（默认ms）|歌词距开始的偏移，负数表示提前，正数表示延后，歌词不同步时可调节|
+|可选|LyricOffset|0（默认ms）|歌词距开始的偏移，负数表示提前，正数表示延后，歌词不同步时可调节|
 |可选|DownloadPath|download（默认）|歌词，专辑的下载路径|
 |可选|Similarity|1.4（默认）|相似度，0-2之间，歌词错误或歌词找不到时可调节|
 |可选|Capacity|100（默认）|缓存歌词和专辑图的最大个数|

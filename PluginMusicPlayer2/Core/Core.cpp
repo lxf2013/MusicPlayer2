@@ -117,7 +117,7 @@ std::wstring Core::AllocData(Measure *measure){
     int     capacity  = RmReadInt(measure->rm, L"Capacity", 100);
     it.resource.Reset(default_cover, default_lyric, path, similarity, capacity);
     
-    int offset = RmReadInt(measure->rm, L"LyricOffset", -800);
+    int offset = RmReadInt(measure->rm, L"LyricOffset", 0);
     it.lyric.Init(offset);
     it.lyric.Load(default_lyric.c_str());
 

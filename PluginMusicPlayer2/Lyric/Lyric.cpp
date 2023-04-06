@@ -156,15 +156,20 @@ bool Lyric::Load(const std::wstring &file){
     // m_stat        = true;
     
     m_lyric.push_back({m_duration, L""});
-    m_last_time = GetTickCount() + m_offset;
+    // m_last_time = GetTickCount() + m_offset;
     return true;
 }
 
+void Lyric::SetTime(DWORD time){
+    m_last_time = time + m_offset;
+}
+
 void Lyric::Stop(){
-    if(m_stop == false){
-        m_stop_time = GetTickCount() + 800;
-        m_stop = true;
-    }
+    Stop(GetTickCount() + 800);
+    // if(m_stop == false){
+    //     m_stop_time = GetTickCount() + 800;
+    //     m_stop = true;
+    // }
 }
 
 void Lyric::Stop(DWORD time){
@@ -175,11 +180,12 @@ void Lyric::Stop(DWORD time){
 }
 
 void Lyric::Start(){
-    if(m_stop == true){
-        m_last_time += GetTickCount() - m_stop_time;
-        m_stop_time = 0;
-        m_stop = false;
-    }
+    Start(GetTickCount());
+    // if(m_stop == true){
+    //     m_last_time += GetTickCount() - m_stop_time;
+    //     m_stop_time = 0;
+    //     m_stop = false;
+    // }
 }
 
 void Lyric::Start(DWORD time){
@@ -207,7 +213,8 @@ bool Lyric::Update(DWORD time){
     }
     if(m_current_pos+1 >= m_lyric.size()){
         // m_last_time = time + m_offset - 300;
-        m_last_time = time + m_offset + 300;
+        // m_last_time = time + m_offset + 300;
+        SetTime(time + 300);
         m_current_pos = 0;
         return true;
     }

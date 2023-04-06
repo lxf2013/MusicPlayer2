@@ -12,6 +12,7 @@ public:
     }
     ITask *Next(DWORD time) override{
         if(CoreData *data = Core::GetData(m_name_space)){
+            data->lyric.SetTime(time);
             auto result = data->resource.GetLyricPath(data->player->GetTrack());
             if(result != m_last_lyric){
                 m_last_lyric = result;

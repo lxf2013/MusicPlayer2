@@ -36,6 +36,7 @@ public:
 public:
     bool Init(int offset);
     bool Load(const std::wstring &file);
+    void SetTime(DWORD time);
     void Stop();
     void Stop(DWORD time);
     void Start();

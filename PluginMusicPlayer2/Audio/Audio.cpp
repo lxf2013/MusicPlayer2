@@ -1,5 +1,7 @@
+
 #include "Audio.h"
 #include "../common.h"
+#include <FunctionDiscoveryKeys_devpkey.h>
 
 const CLSID CLSID_MMDeviceEnumerator	= __uuidof(MMDeviceEnumerator);
 const IID IID_IMMDeviceEnumerator		= __uuidof(IMMDeviceEnumerator);
@@ -81,6 +83,32 @@ bool Audio::Update(DWORD time){
     }
     m_last_time = time;
 
+    while(m_cnt == 10){
+        IMMDevice*		dev = nullptr;
+        HRESULT hr = m_enum->GetDefaultAudioEndpoint(eRender, eMultimedia, &dev);
+        if(FAILED(hr)) { 
+            break;
+        }
+
+        IPropertyStore*	props		= NULL;
+        if(dev->OpenPropertyStore(STGM_READ, &props) == S_OK) {
+            PROPVARIANT	varName;	PropVariantInit(&varName);
+            if(props->GetValue(PKEY_Device_FriendlyName, &varName) == S_OK) {
+                WCHAR devName[64] = {};
+                _snwprintf_s(devName, _TRUNCATE, L"%s", varName.pwszVal);
+                if(m_last_dev != devName){
+                    Release();
+                    Init();
+                    m_last_dev = devName;
+                }
+            }
+            PropVariantClear(&varName);
+        }
+        SAFE_RELEASE(props);
+        SAFE_RELEASE(dev);
+        break;
+    }
+
     BYTE*			buffer;
     UINT32			nFrames;
     DWORD			flags;
@@ -97,7 +125,7 @@ bool Audio::Update(DWORD time){
         m_cnt = 0;
         m_status = true;
     }else if(++m_cnt > 5){
-        m_cnt = 0;
+        m_cnt > 10 && (m_cnt = 0);
         m_status = false;
     }
     return m_status;

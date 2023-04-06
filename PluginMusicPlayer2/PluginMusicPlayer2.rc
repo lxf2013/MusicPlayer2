@@ -24,8 +24,8 @@ BEGIN
     BEGIN
         BLOCK "040904E4"
         BEGIN
-            VALUE "FileVersion", "3.2.0.0"
-            VALUE "LegalCopyright", "LXF"
+            VALUE "FileVersion", "3.3.2.0"
+            VALUE "LegalCopyright", "https://github.com/lxf2013/MusicPlayer2"
 
             // Don't change the entries below!
             VALUE "ProductName", "Rainmeter"
