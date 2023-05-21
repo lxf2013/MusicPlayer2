@@ -17,19 +17,14 @@ bool Resource::Reset(const std::wstring &default_cover, const std::wstring &defa
     std::string path = converter.to_bytes(_path);
     m_path = path;
 
-    std::filesystem::path dir(path);
+    std::filesystem::path dir(_path);
     if (std::filesystem::exists(dir) == false) {
-        // if(mkdir(path.c_str()) != 0){
-
-        // }
-        return !mkdir(path.c_str());
+        return std::filesystem::create_directory(dir);
     }
-    for (auto& it : std::filesystem::directory_iterator(path)) {
+    for (auto& it : std::filesystem::directory_iterator(_path)) {
         std::string temp = it.path().stem().u8string();
-
-        std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-
         temp = m_lru.Insert(temp);
+
         if (temp.size()) {
             DeleteFile(converter.from_bytes(path + "\\" + temp + ".lrc").c_str());
             DeleteFile(converter.from_bytes(path + "\\" + temp + ".jpg").c_str());

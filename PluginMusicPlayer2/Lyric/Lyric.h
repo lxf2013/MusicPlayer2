@@ -14,6 +14,7 @@ private:
         uint64_t time;
         std::wstring   lrc;
         std::wstring   tlrc;
+        bool operator<(const Line &) const;
     };
 
 private:

@@ -1,9 +1,14 @@
-#include <iostream>
+//#include <iostream>
+#include <algorithm>
 #include <fstream>
 #include <codecvt>
 #include "Lyric.h"
 // #include "../../API/RainmeterAPI.h"
 // using namespace std;
+
+bool Lyric::Line::operator<(const Lyric::Line &a) const{
+    return this->time < a.time;
+}
 
 Lyric::Lyric() 
     : m_lyric(1, { 0, L"" })
@@ -156,6 +161,7 @@ bool Lyric::Load(const std::wstring &file){
     // m_stat        = true;
     
     m_lyric.push_back({m_duration, L""});
+    std::sort(m_lyric.begin(), m_lyric.end());
     // m_last_time = GetTickCount() + m_offset;
     return true;
 }

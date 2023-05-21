@@ -95,7 +95,7 @@ ImageName=[Cover]
 W=120
 DynamicVariables=1
 ```
-更详细的信息请下载发布的[皮肤](https://github.com/lxf2013/MusicPlayer2/releases)，里面有详细的示例（**示例都是GB2312编码格式，如果打开是乱码请切换**），[使用文档](./Example/readme.md)，[示例](./Example)
+更详细的信息请下载发布的[皮肤](https://github.com/lxf2013/MusicPlayer2/releases)，里面有详细的示例（**示例都是utf-16编码格式，如果打开是乱码请切换**），[使用文档](./Example/readme.md)，[示例](./Example)
 
 ## Rainmeter Plugin开发
 
