@@ -32,7 +32,7 @@ PlayerName=QQMusic
 |是否必须|配置|值|范围|描述|
 |:---:|:---:|:---:|:---:|:---:|
 |必须|PlayerName|QQMusic（QQ音乐），KwMusic（酷我音乐），KgMusic（酷狗音乐），BaiduMusic（百度音乐），CloudMusic（网易云音乐）|限定于前面五个值|指定播放器类型|
-|可选|LyricOffset|0（默认ms）|(-$\infty$, $\infty$)|歌词距开始的偏移，负数表示提前，正数表示延后，歌词不同步时可调节|
+|可选|LyricOffset|0（默认ms）|($-\infty$, $\infty$)|歌词距开始的偏移，负数表示提前，正数表示延后，歌词不同步时可调节|
 |可选|DownloadPath|download（默认）|有效的文件夹路径|歌词，专辑的下载路径|
 |可选|Similarity|1.4（默认）|[0, 2]|数据过滤，歌词错误或歌词找不到时可调节，0则关闭，2则过滤所有，处于中间时越大过滤越严格|
 |可选|Capacity|100（默认）|[1, $\infty$)|缓存歌词和专辑图的最大个数|
