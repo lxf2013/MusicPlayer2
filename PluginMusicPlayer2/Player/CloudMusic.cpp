@@ -45,7 +45,7 @@ bool CloudMusic::Update(DWORD time){
         //L"%T - %A   "
 
         std::wstring data = Buffer;
-        data.resize(data.length() - 3);
+        // data.resize(data.length() - 3);
 
         std::wstring::size_type pos;
         pos = data.find(L" - ");

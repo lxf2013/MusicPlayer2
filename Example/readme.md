@@ -29,16 +29,16 @@ PlayerName=QQMusic
 管理整个插件的配置，及所有信息的更新，如歌词更新，专辑更新，所以不能将雨滴的更新时间设置太长
 
 相关配置
-|是否必须|配置|值|描述|
-|:---:|:---:|:---:|:---:|
-|必须|PlayerName|QQMusic（QQ音乐），KwMusic（酷我音乐），KgMusic（酷狗音乐），BaiduMusic（百度音乐），CloudMusic（网易云音乐）|指定播放器类型|
-|可选|LyricOffset|0（默认ms）|歌词距开始的偏移，负数表示提前，正数表示延后，歌词不同步时可调节|
-|可选|DownloadPath|download（默认）|歌词，专辑的下载路径|
-|可选|Similarity|1.4（默认）|相似度，0-2之间，歌词错误或歌词找不到时可调节|
-|可选|Capacity|100（默认）|缓存歌词和专辑图的最大个数|
-|可选|DefaultCover||默认的专辑图，当没有专辑时显示|
-|可选|DefaultLyric||默认的歌词，当没有歌词时显示|
-|可选|LyricTimeout|10000（默认ms）|当没有声音播放后多长时间后认为歌曲停止，之后停止歌词|
+|是否必须|配置|值|范围|描述|
+|:---:|:---:|:---:|:---:|:---:|
+|必须|PlayerName|QQMusic（QQ音乐），KwMusic（酷我音乐），KgMusic（酷狗音乐），BaiduMusic（百度音乐），CloudMusic（网易云音乐）|限定于前面五个值|指定播放器类型|
+|可选|LyricOffset|0（默认ms）|(-$\infty$, $\infty$)|歌词距开始的偏移，负数表示提前，正数表示延后，歌词不同步时可调节|
+|可选|DownloadPath|download（默认）|有效的文件夹路径|歌词，专辑的下载路径|
+|可选|Similarity|1.4（默认）|[0, 2]|数据过滤，歌词错误或歌词找不到时可调节，0则关闭，2则过滤所有，处于中间时越大过滤越严格|
+|可选|Capacity|100（默认）|[1, $\infty$)|缓存歌词和专辑图的最大个数|
+|可选|DefaultCover||有效的图片路径|默认的专辑图，当没有专辑时显示|
+|可选|DefaultLyric||有效的文本文件路径|默认的歌词，当没有歌词时显示|
+|可选|LyricTimeout|10000（默认ms）|[0, $\infty$)|当没有声音播放后多长时间后认为歌曲停止，之后停止歌词|
 
 
 
@@ -185,8 +185,8 @@ LeftMouseUpAction=[!CommandMeasure PlayerCenter PlayPause]
 ```
 |命令|描述|
 |:---:|:---:|
-|Open|打开播放器|
-|Close|关闭播放器|
+|Open|打开播放器（目前不是所有播放器都能成功）|
+|Close|关闭播放器（未测试）|
 |PlayPause|播放暂停|
 |Stop|停止播放|
 |Previous|上一首|
