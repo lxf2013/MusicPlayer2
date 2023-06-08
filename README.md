@@ -5,6 +5,8 @@
 
 ![图片](./image.png)
 
+<img src="./image.gif" width="200%">
+
 ## 快速开始
 ```ini
 [Rainmeter]
