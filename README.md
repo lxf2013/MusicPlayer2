@@ -12,11 +12,11 @@
 Update=100
 
 ==========================Manager，管理整个插件的配置，播放器信息的获取，歌词，专辑的获取=====================
+;插件配置
 [PlayerCenter]
 Measure=Plugin
 Plugin=MusicPlayer2.dll
 Type=Manager
-
 ; QQ音乐为 QQMusic
 ; 酷我音乐为 KwMusic
 ; 酷狗音乐为 KgMusic
@@ -29,7 +29,6 @@ PlayerName=QQMusic
 [Track]
 Measure=Plugin
 Plugin=MusicPlayer2.dll
-
 ;指定管理者(必须的)
 Manager=PlayerCenter
 Type=Track
@@ -46,10 +45,8 @@ Y=10
 [Lyric0]
 Measure=Plugin
 Plugin=MusicPlayer2.dll
-
 ;指定管理者(必须的)
 Manager=PlayerCenter
-
 ; lrc_0 当前播放的歌词
 Type=lrc0
 
@@ -60,30 +57,11 @@ MeasureName=Lyric0
 Y=40
 X=125
 
-; 获取当前歌词翻译
-[TLyric0]
-Measure=Plugin
-Plugin=MusicPlayer2.dll
-
-;指定管理者(必须的)
-Manager=PlayerCenter
-
-; tlrc_0 当前播放歌词的翻译
-Type=tlrc0
-
-; 显示当前歌词的翻译
-[ShowTLyric0]
-Meter=String
-MeasureName=TLyric0
-Y=70
-X=125
-
 ==================================专辑图片获取与显示===========================
 ; 专辑图片获取，会返回路径，图片会自动联网下载，缓存在本地，下一次直接本地读取
 [Cover]
 Measure=Plugin
 Plugin=MusicPlayer2.dll
-
 ;指定管理者(必须的)
 Manager=PlayerCenter
 Type=Cover
